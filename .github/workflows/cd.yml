@@ -4,11 +4,6 @@ on:
   push:
     branches: [ master ]
   workflow_dispatch:
-    inputs: 
-      release:
-        description: "Make actual release (push in git and publish and npm"
-        default: false
-        required: true
 
 jobs:
   build:
