@@ -12,33 +12,7 @@ on:
 
 jobs:
   build:
-    env: 
-      isTriggeredManually: ${{ github.event_name == 'workflow_dispatch' }}
-      isCommitMarkedSkip: ${{ startsWith(github.event.head_commit.message, '[ci skip]') }}
-      shouldSkip: ${{ !isTriggeredManually && isCommitMarkedSkip }}
-      isPreview: ${{}}
-    if: "!env.shouldSkip"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-        registry-url: https://registry.npmjs.org/
-
-    # first push the version to git to avoid publishing smth that is not pushed yet 
-    # (which can happen if there is another commit while this workflow is still running)
-    - run: git config --global user.name "GitHub CD bot"
-    - run: git config --global user.email "github-cd-bot@example.com"
-    - run: npm version prerelease -m "[ci skip] %s"
-    - run: git push
-      env:
-        github-token: ${{ secrets.GITHUB_TOKEN }}    
-
     - run: npm ci
     - run: npm run build
-    - run: npm test
-    - run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
