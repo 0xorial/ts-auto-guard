@@ -1,0 +1,30 @@
+
+name: NPM publish CD workflow 1
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+        registry-url: https://registry.npmjs.org/
+    - run: git config --global user.name "GitHub CD bot"
+    - run: git config --global user.email "github-cd-bot@example.com"
+    - run: npm version prerelease -m "[ci skip] %s"
+    - run: git push
+      env:
+        github-token: ${{ secrets.GITHUB_TOKEN }}    
+
+    - run: npm ci
+    - run: npm run build
+    - run: npm test
+    - run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
